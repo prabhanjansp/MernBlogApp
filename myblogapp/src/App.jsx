@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard"
 import About from "./pages/About"
 import Projects from "./pages/Projects"
 import SignIn from "./pages/SignIn"
+import Header from './components/Header' 
 import SignUp from "./pages/SignUp"
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <Header/>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/about" element={<About/>}/>
