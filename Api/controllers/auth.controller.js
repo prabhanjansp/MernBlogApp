@@ -1,7 +1,8 @@
 import User from "../modules/user.js";
-
-export const signup = async (req, res) => {
-//   console.log(req.body);
+import bcryptjs from "bcrypt"
+import { errorHandler } from "../util/error.js";
+export const signup = async (req, res,next) => {
+  //   console.log(req.body);
 
   const { username, email, password } = req.body;
   if (
@@ -13,14 +14,15 @@ export const signup = async (req, res) => {
     password === " "
   ) {
     // return res.status(400).json({ message: "All fields are required" });
-    return res.status(400).json({ message: "All fields are mandatory" });
+    next(errorHandler( 400, "All fields are mandatory"))
   }
-  const freshuser = new User({ username:username, email:email, password:password });
+  const hashPasswoed = bcryptjs.hashSync(password, 10)
+  const freshuser = new User({ username: username, email: email, password: hashPasswoed });
   // /saving the user to database
   try {
     await freshuser.save();
     res.json({ message: "Signup done" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error)
   }
 };
