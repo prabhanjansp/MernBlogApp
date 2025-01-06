@@ -5,13 +5,13 @@ import userRoutes from "./routes/user.route.js";
 import authRoute from "./routes/auth.route.js";
 import cors from 'cors';
 
-// dotenv.config();
+dotenv.config();
 
 mongoose
-  // .connect(process.env.mongo)
-  .connect(
-    "mongodb+srv://prabhanjansconti:wHYb2KwPFNkIgFio@mern-blog.f3k1h.mongodb.net/?retryWrites=true&w=majority&appName=mern-blog"
-  )
+  .connect(process.env.mongo)
+  // .connect(
+  //   // "mongodb+srv://prabhanjansconti:wHYb2KwPFNkIgFio@mern-blog.f3k1h.mongodb.net/?retryWrites=true&w=majority&appName=mern-blog"
+  // )
  
   .then(() => {
     console.log("DB Connected");
