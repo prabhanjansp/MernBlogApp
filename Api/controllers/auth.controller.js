@@ -1,6 +1,9 @@
 import User from "../modules/user.js";
-// import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 import { errorHandler } from "../util/error.js";
+import jwt from "jsonwebtoken";
+
+// import dotenv from "dotenv";
 export const signup = async (req, res, next) => {
   //   console.log(req.body);
 
@@ -14,15 +17,47 @@ export const signup = async (req, res, next) => {
     password === " "
   ) {
     // return res.status(400).json({ message: "All fields are required" });
-    next(errorHandler(400, "All fields are mandatory"))
+    next(errorHandler(400, "All fields are mandatory"));
   }
-  // const hashPasswoed = bcrypt.hashSync(password, 10)
-  const freshuser = new User({ username, email, password });
+  const hashPassword = bcrypt.hashSync(password, 10);
+  const freshuser = new User({ username, email, password: hashPassword });
+  console.log(password, hashPassword);
   // /saving the user to database
   try {
     await freshuser.save();
     res.json({ message: "Signup done" });
   } catch (error) {
-    next(error)
+    next(error);
+  }
+};
+
+export const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password || email === " " || password === " ") {
+    return next(errorHandler(400, "All fields are mandatory"));
+  }
+  try {
+    const validUser = await User.findOne({ email });
+    if (!validUser) {
+      next(errorHandler(404, "Invalid Email ID"));
+    }
+    const validPassword = bcrypt.compareSync(password, validUser.password);
+    if (!validPassword) {
+      return next(errorHandler(400, "Invalid Password"));
+    } else {
+      // res.json({ message: "Signin done" });
+      const token = jwt.sign({ id: validUser._id }, "secrete");
+
+      const { password: pass, ...rest } = validUser._doc;
+      // {expiresIn: "1d"}
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .json(rest);
+    }
+  } catch (error) {
+    next(error);
   }
 };
