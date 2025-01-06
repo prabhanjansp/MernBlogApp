@@ -3,11 +3,15 @@ import mongoose from "mongoose";
 // import dotenv from "dotenv";
 import userRoutes from "./routes/user.route.js";
 import authRoute from "./routes/auth.route.js";
+import cors from 'cors';
 
 // dotenv.config();
 
 mongoose
-  .connect(process.env.mongo)
+  // .connect(process.env.mongo)
+  .connect(
+    "mongodb+srv://prabhanjansconti:wHYb2KwPFNkIgFio@mern-blog.f3k1h.mongodb.net/?retryWrites=true&w=majority&appName=mern-blog"
+  )
  
   .then(() => {
     console.log("DB Connected");
@@ -19,6 +23,7 @@ mongoose
 
 const app = e();
 app.use(e.json()); // it will allow the  sending the data in the form of json in the body of the request
+app.use(cors())
 app.listen(3000, () => {
   console.log("server is running on the port 3000");
 });
@@ -35,3 +40,4 @@ app.use((err, req, res, next) => {
     message,
   });
 });
+
