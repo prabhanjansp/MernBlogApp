@@ -1,13 +1,20 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import React, { useState } from "react";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFail,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 
 const SignIn = () => {
   const [formdata, setFormData] = useState({});
-  const [errormessage, setErrormessage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate=useNavigate()
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error: errormessage } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormData({ ...formdata, [e.target.id]: e.target.value.trim() });
@@ -17,33 +24,26 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formdata.email || !formdata.password) {
-      return setErrormessage("Please do fill out all the fields");
+      return useDispatch(signInFail('Please fill all the fields'));
     }
     try {
-      setLoading(true);
-      setErrormessage(null);
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/signin",
-        formdata,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const data = res.data;
-      alert("Sign in Successfully");
-
-      console.log(data);
+      dispatch(signInStart());
+      const res = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formdata),
+      });
+      const data = await res.json();
       if (data.success === false) {
-        return setErrormessage(data.message);
+        dispatch(signInFail(data.message));
       }
-      setLoading(false);
-    
-        navigate('/')
-      
+
+      if (res.ok) {
+        dispatch(signInSuccess(data));
+        navigate('/');
+      }
     } catch (error) {
-      console.error(error.response ? error.response.data : error.message);
-      setErrormessage(error.message);
-      setLoading(false);
+      dispatch(signInFail(error.message));
     }
   };
   return (
@@ -66,7 +66,6 @@ const SignIn = () => {
           <div className="flex-1">
             <div>
               <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-               
                 <div>
                   <Label value="Your Email" />
                   <TextInput
