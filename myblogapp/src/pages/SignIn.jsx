@@ -8,30 +8,27 @@ import {
   signInStart,
   signInSuccess,
 } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 const SignIn = () => {
-  const [formdata, setFormData] = useState({});
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({});
   const { loading, error: errormessage } = useSelector((state) => state.user);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleChange = (e) => {
-    setFormData({ ...formdata, [e.target.id]: e.target.value.trim() });
-    console.log(formdata);
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formdata.email || !formdata.password) {
-      return useDispatch(signInFail('Please fill all the fields'));
+    if (!formData.email || !formData.password) {
+      return dispatch(signInFail('Please fill all the fields'));
     }
     try {
       dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formdata),
+        body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (data.success === false) {
@@ -98,6 +95,7 @@ const SignIn = () => {
                     "Sign In"
                   )}
                 </Button>
+                <OAuth/>
               </form>
               <div className="flex gap-2 text-sm mt-5">
                 <span>don't have an account</span>

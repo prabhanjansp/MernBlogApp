@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import {BrowserRouter,Routes,Route} from "react-router-dom"
+  import {BrowserRouter,Routes,Route} from "react-router-dom"
 import Home from "./pages/Home"
 import Dashboard from "./pages/Dashboard"
 import About from "./pages/About"
@@ -10,7 +9,6 @@ import SignUp from "./pages/SignUp"
 import Footer from './components/Footer'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
